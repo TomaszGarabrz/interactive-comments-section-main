@@ -2,9 +2,19 @@ import { createSlice } from '@reduxjs/toolkit';
 
 import jsonData from '../data.json';
 
+const dataStorage =
+  localStorage.getItem('data') != null
+    ? JSON.parse(localStorage.getItem('data'))
+    : jsonData.comments;
+
+const stateIdStorage =
+  localStorage.getItem('stateId') != null
+    ? JSON.parse(localStorage.getItem('stateId'))
+    : 6;
+
 const initialState = {
-  data: jsonData.comments,
-  stateId: 5,
+  data: dataStorage,
+  stateId: 6,
   currentUser: jsonData.currentUser,
   currentEditItem: null,
 };
@@ -34,6 +44,8 @@ const appSlice = createSlice({
       }
 
       state.data = localState;
+
+      localStorage.setItem('data', JSON.stringify(state.data));
     },
     removeScore: (state, action) => {
       let localState = state.data;
@@ -64,6 +76,7 @@ const appSlice = createSlice({
       }
 
       state.data = localState;
+      localStorage.setItem('data', JSON.stringify(state.data));
     },
     addReply: (state, action) => {
       let localState = state.data;
@@ -72,6 +85,7 @@ const appSlice = createSlice({
       );
 
       //find element id tylko w coments
+      console.log(action.payload);
 
       let findCurrentReplyIndex = localState[
         findCurrentIndex
@@ -84,7 +98,9 @@ const appSlice = createSlice({
       );
 
       state.data = localState;
+      localStorage.setItem('data', JSON.stringify(state.data));
       state.stateId = state.stateId + 1;
+      localStorage.setItem('stateId', JSON.stringify(state.stateId));
     },
     deleteReply: (state, action) => {
       let localState = state.data;
@@ -107,6 +123,7 @@ const appSlice = createSlice({
       localState[findCurrentIndex].replies.push(...newCommentArray); // tutaj dopiero update po usunięciu poprzednich
 
       state.data = localState;
+      localStorage.setItem('data', JSON.stringify(state.data));
     },
     editReply: (state, action) => {
       let localState = state.data;
@@ -128,7 +145,7 @@ const appSlice = createSlice({
       let findElement = localState[findCurrentIndex].replies.find(
         (item) => item.id === action.payload.replyId
       );
-
+      localStorage.setItem('data', JSON.stringify(state.data));
       state.currentEditItem = findElement;
     },
   },
